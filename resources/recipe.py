@@ -22,13 +22,13 @@ class Recipe(Resource):
                         )
     @jwt_required()
     def get(self, name):
-        recipe = RecipeModel.find_by_name(name)
+        recipe = RecipeModel.find_by_name(name.casefold())
         if recipe:
             return recipe.json()
         return {'message': 'recipe not found'}, 404
 
     def post(self, name):
-        if RecipeModel.find_by_name(name):
+        if RecipeModel.find_by_name(name.casefold()):
             return {'message': "An recipe with name '{}' already exists.".format(name)}, 400
 
         data = Recipe.parser.parse_args()
@@ -43,7 +43,7 @@ class Recipe(Resource):
         return recipe.json(), 201
 
     def delete(self, name):
-        recipe = RecipeModel.find_by_name(name)
+        recipe = RecipeModel.find_by_name(name.casefold())
         if recipe:
             recipe.delete_from_db()
             return {'message': 'Recipe deleted.'}
@@ -52,7 +52,7 @@ class Recipe(Resource):
     def put(self, name):
         data = Recipe.parser.parse_args()
 
-        recipe = RecipeModel.find_by_name(name)
+        recipe = RecipeModel.find_by_name(name.casefold())
 
         if recipe:
             recipe.name = data['name']
